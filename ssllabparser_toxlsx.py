@@ -1,4 +1,10 @@
 #!/usr/bin/python
+#  Created by Matt Molda, base code from https://github.com/xme/toolbox/blob/master/ssllabs-scan-parse.py
+# run ssllabs-scan and output file to json then pipe through this or cat output and pipe through this to create spreadsheet
+# sample cat myscan.json | ./ssllabparser_toxslx.py
+#sample ssllabs-scan --host-file=mydomains.txt --quiet > mydomains.json && cat mydomains.json | ./ssllabparser_toxslx.py
+
+
 import json
 import md5
 import xlsxwriter
