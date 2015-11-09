@@ -19,7 +19,7 @@ with sys.stdin as json_data:
                 print "Error: no JSON data received!"
                 exit(1)
 #setup XLSX
-workbook = xlsxwriter.Workbook('SSL_Data.xlsx')
+workbook = xlsxwriter.Workbook('SSLLabsScanResults.xlsx')
 worksheet = workbook.add_worksheet()
 bold = workbook.add_format({'bold': True})
 worksheet.write('A1', 'Site Name', bold)
@@ -42,6 +42,9 @@ worksheet.write('P1', 'Supports RC4', bold)
 
 row = 1
 col = 0
+
+#parse through json and gather specific info
+
 for site in data:
 	if site:
 		endpoints = site['endpoints']
@@ -65,7 +68,7 @@ for site in data:
 		freak = endpoints[0]['details']['freak']
 		logjam = endpoints[0]['details']['logjam']
 		rc4 = endpoints[0]['details']['supportsRc4']
-		print domain, port, grade, issuer, date, size, alg
+
 # output data to xlsx
 		worksheet.write(row, col, domain)
 		worksheet.write(row, col + 1,  port)
@@ -86,4 +89,6 @@ for site in data:
 		row += 1
 	else:
 		break
+
+#close workbook
 workbook.close()
