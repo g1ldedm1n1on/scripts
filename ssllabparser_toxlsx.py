@@ -1,8 +1,9 @@
 #!/usr/bin/python
-#  Created by Matt Molda, base code from https://github.com/xme/toolbox/blob/master/ssllabs-scan-parse.py
+#  Created by Maticnfgnilfnnhlciegifftkievnu
+# Creater: Matt Molda, base code from https://github.com/xme/toolbox/blob/master/ssllabs-scan-parse.py
 # run ssllabs-scan and output file to json then pipe through this or cat output and pipe through this to create spreadsheet
 # sample cat myscan.json | ./ssllabparser_toxslx.py
-#sample ssllabs-scan --host-file=mydomains.txt --quiet > mydomains.json && cat mydomains.json | ./ssllabparser_toxslx.py
+# sample ssllabs-scan --host-file=mydomains.txt --quiet > mydomains.json && cat mydomains.json | ./ssllabparser_toxslx.py
 
 
 import json
@@ -29,66 +30,77 @@ worksheet.write('D1', 'Certificate Issuer', bold)
 worksheet.write('E1', 'Certificate Expiration', bold)
 worksheet.write('F1', 'Certificate MD5 Hash', bold)
 worksheet.write('G1', 'Certificate Size', bold)
-worksheet.write('H1', 'Certificate Strength', bold)
-worksheet.write('I1', 'HeartBleed', bold)
-worksheet.write('J1', 'HeartBeat', bold)
-worksheet.write('K1', 'OpenSSL CCS', bold)
-worksheet.write('L1', 'Poodle', bold)
-worksheet.write('M1', 'Fallback SCSV', bold)
-worksheet.write('N1', 'Freak', bold)
-worksheet.write('O1', 'Logjam', bold)
-worksheet.write('P1', 'Supports RC4', bold)
-#workbook.close()
+worksheet.write('H1', 'Certificate Algorithm', bold)
+worksheet.write('I1', 'Certificate Strength', bold)
+worksheet.write('J1', 'HeartBleed', bold)
+worksheet.write('K1', 'HeartBeat', bold)
+worksheet.write('L1', 'OpenSSL CCS', bold)
+worksheet.write('M1', 'Poodle', bold)
+worksheet.write('N1', 'Fallback SCSV', bold)
+worksheet.write('O1', 'Freak', bold)
+worksheet.write('P1', 'Logjam', bold)
+worksheet.write('Q1', 'Supports RC4', bold)
 
+#set default starting places
 row = 1
 col = 0
+# make sure the site contains appropiate data to SSL stuff
+
 
 #parse through json and gather specific info
 
 for site in data:
-	if site:
+	print type(site)
+# make sure there are endpoints to pull data from in the site
+	if "endpoints" in site:
 		endpoints = site['endpoints']
-        	certExp = time.ctime(int(endpoints[0]['details']['cert']['notAfter']/1000))
-        	certRaw = endpoints[0]['details']['chain']['certs'][0]['raw']
-		cert5 = md5.new(certRaw).hexdigest()
-
-		domain = site['host']
-		port = site['port']
-		grade = endpoints[0]['grade']
-		issuer = endpoints[0]['details']['cert']['issuerLabel']
-		date = time.ctime(int(endpoints[0]['details']['cert']['notAfter']/1000))
-		size = endpoints[0]['details']['key']['size']
-		alg = endpoints[0]['details']['key']['alg']
-		strength = endpoints[0]['details']['key']['strength']
-		heartbled = (endpoints[0]['details']['heartbleed'])
-		heartbeat = endpoints[0]['details']['heartbeat']
-		opensslccs = endpoints[0]['details']['openSslCcs']
-		poodle = endpoints[0]['details']['poodle']
-		fallback = endpoints[0]['details']['fallbackScsv']
-		freak = endpoints[0]['details']['freak']
-		logjam = endpoints[0]['details']['logjam']
-		rc4 = endpoints[0]['details']['supportsRc4']
+		status = endpoints[0]['statusMessage']
+		print status
+#	If status it not ready for statusMessage there is no certificate info to be pulled from the endpoints
+		if "Ready" in status:
+#   Pull in all the data we want for that site to write to excel
+			certExp = time.ctime(int(endpoints[0]['details']['cert']['notAfter']/1000))
+			certRaw = endpoints[0]['details']['chain']['certs'][0]['raw']
+			certmd5 = md5.new(certRaw).hexdigest()
+			domain = site['host']
+			print domain
+			port = site['port']
+			grade = endpoints[0]['grade']
+			issuer = endpoints[0]['details']['cert']['issuerLabel']
+			date = time.ctime(int(endpoints[0]['details']['cert']['notAfter']/1000))
+			size = endpoints[0]['details']['key']['size']
+			alg = endpoints[0]['details']['key']['alg']
+			strength = endpoints[0]['details']['key']['strength']
+			heartbled = (endpoints[0]['details']['heartbleed'])
+			heartbeat = endpoints[0]['details']['heartbeat']
+			opensslccs = endpoints[0]['details']['openSslCcs']
+			poodle = endpoints[0]['details']['poodle']
+			if "fallbackScsv" in endpoints[0]['details']:
+				fallback = endpoints[0]['details']['fallbackScsv']
+			else:
+				fallback = "No Data Returned"
+				pass
+			freak = endpoints[0]['details']['freak']
+			logjam = endpoints[0]['details']['logjam']
+			rc4 = endpoints[0]['details']['supportsRc4']
 
 # output data to xlsx
-		worksheet.write(row, col, domain)
-		worksheet.write(row, col + 1,  port)
-		worksheet.write(row, col + 2, grade)
-		worksheet.write(row, col + 3, issuer)
-		worksheet.write(row, col + 4, date)
-		worksheet.write(row, col + 5, size)
-		worksheet.write(row, col + 6, alg)
-		worksheet.write(row, col + 7, strength)
-		worksheet.write(row, col + 8, heartbled)
-		worksheet.write(row, col + 9, heartbeat)
-		worksheet.write(row, col + 10, opensslccs)
-		worksheet.write(row, col + 11, poodle)
-		worksheet.write(row, col + 12, fallback)
-		worksheet.write(row, col + 13, freak)
-		worksheet.write(row, col + 14, logjam)
-		worksheet.write(row, col + 15, rc4)
-		row += 1
-	else:
-		break
-
-#close workbook
+			worksheet.write(row, col, domain)
+			worksheet.write(row, col + 1,  port)
+			worksheet.write(row, col + 2, grade)
+			worksheet.write(row, col + 3, issuer)
+			worksheet.write(row, col + 4, date)
+			worksheet.write(row, col + 5, certmd5)
+			worksheet.write(row, col + 6, size)
+			worksheet.write(row, col + 7, alg)
+			worksheet.write(row, col + 8, strength)
+			worksheet.write(row, col + 9, heartbled)
+			worksheet.write(row, col + 10, heartbeat)
+			worksheet.write(row, col + 11, opensslccs)
+			worksheet.write(row, col + 12, poodle)
+			worksheet.write(row, col + 13, fallback)
+			worksheet.write(row, col + 14, freak)
+			worksheet.write(row, col + 15, logjam)
+			worksheet.write(row, col + 16, rc4)
+			row += 1
 workbook.close()
