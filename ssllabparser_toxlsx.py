@@ -50,12 +50,10 @@ col = 0
 #parse through json and gather specific info
 
 for site in data:
-	print type(site)
 # make sure there are endpoints to pull data from in the site
 	if "endpoints" in site:
 		endpoints = site['endpoints']
 		status = endpoints[0]['statusMessage']
-		print status
 #	If status it not ready for statusMessage there is no certificate info to be pulled from the endpoints
 		if "Ready" in status:
 #   Pull in all the data we want for that site to write to excel
