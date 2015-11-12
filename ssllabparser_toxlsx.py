@@ -1,6 +1,6 @@
 #!/usr/bin/python
-#  Created by Maticnfgnilfnnhlciegifftkievnu
-# Creater: Matt Molda, base code from https://github.com/xme/toolbox/blob/master/ssllabs-scan-parse.py
+# 
+# Created: GildedMinion, base code XME @ https://github.com/xme/toolbox/blob/master/ssllabs-scan-parse.py
 # run ssllabs-scan and output file to json then pipe through this or cat output and pipe through this to create spreadsheet
 # sample cat myscan.json | ./ssllabparser_toxslx.py
 # sample ssllabs-scan --host-file=mydomains.txt --quiet > mydomains.json && cat mydomains.json | ./ssllabparser_toxslx.py
@@ -40,7 +40,8 @@ worksheet.write('N1', 'Fallback SCSV', bold)
 worksheet.write('O1', 'Freak', bold)
 worksheet.write('P1', 'Logjam', bold)
 worksheet.write('Q1', 'Supports RC4', bold)
-
+worksheet.write('R1', 'Vulnerable to BEAST', bold)
+worksheet.write('S1', 'Server Signature', bold)
 #set default starting places
 row = 1
 col = 0
@@ -73,6 +74,7 @@ for site in data:
 			heartbeat = endpoints[0]['details']['heartbeat']
 			opensslccs = endpoints[0]['details']['openSslCcs']
 			poodle = endpoints[0]['details']['poodle']
+# Needed to validate fallbackScvs.  Json is inconsistent and doesn't always return true or false for key
 			if "fallbackScsv" in endpoints[0]['details']:
 				fallback = endpoints[0]['details']['fallbackScsv']
 			else:
@@ -81,6 +83,14 @@ for site in data:
 			freak = endpoints[0]['details']['freak']
 			logjam = endpoints[0]['details']['logjam']
 			rc4 = endpoints[0]['details']['supportsRc4']
+			beast = endpoints[0]['details']['vulnBeast']
+			if "serverSignature" in endpoints[0]['details']:
+				servsig = endpoints[0]['details']['serverSignature']
+			else:
+				servsig = "No Server Signature"
+				pass
+			if servsig == "":
+				servsig = "No Server Signature"
 
 # output data to xlsx
 			worksheet.write(row, col, domain)
@@ -100,5 +110,7 @@ for site in data:
 			worksheet.write(row, col + 14, freak)
 			worksheet.write(row, col + 15, logjam)
 			worksheet.write(row, col + 16, rc4)
+			worksheet.write(row, col + 17, beast)
+			worksheet.write(row, col + 18, servsig)
 			row += 1
 workbook.close()
