@@ -4,6 +4,7 @@
 # run ssllabs-scan and output file to json then pipe through this or cat output and pipe through this to create spreadsheet
 # sample cat myscan.json | ./ssllabparser_toxslx.py
 # sample ssllabs-scan --host-file=mydomains.txt --quiet > mydomains.json && cat mydomains.json | ./ssllabparser_toxslx.py
+# scoring guide located : https://www.ssllabs.com/downloads/SSL_Server_Rating_Guide.pdf
 
 
 import json
@@ -41,7 +42,8 @@ worksheet.write('O1', 'Freak', bold)
 worksheet.write('P1', 'Logjam', bold)
 worksheet.write('Q1', 'Supports RC4', bold)
 worksheet.write('R1', 'Vulnerable to BEAST', bold)
-worksheet.write('S1', 'Server Signature', bold)
+worksheet.write('S1', 'Insecure Renegotiation', bold)
+worksheet.write('T1', 'Server Signature', bold)
 #set default starting places
 row = 1
 col = 0
@@ -90,7 +92,15 @@ for site in data:
 				servsig = "No Server Signature"
 				pass
 			if servsig == "":
-				servsig = "No Server Signature"
+				servsig == "No Server Signature"
+# Check Insecure Number and set value as needed
+			insecure = endpoints[0]['details']['renegSupport']
+			if insecure == 1:
+				insecureval = "Allowed"
+			elif insecure == 6:
+				insecureval = "Secure Renegotiation Allowed Possible DoS"
+			else:
+				insecureval = "Not Allowed"
 
 # output data to xlsx
 			worksheet.write(row, col, domain)
@@ -111,6 +121,7 @@ for site in data:
 			worksheet.write(row, col + 15, logjam)
 			worksheet.write(row, col + 16, rc4)
 			worksheet.write(row, col + 17, beast)
-			worksheet.write(row, col + 18, servsig)
+			worksheet.write(row, col + 18, insecureval)
+			worksheet.write(row, col + 19, servsig)
 			row += 1
 workbook.close()
