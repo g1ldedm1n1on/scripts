@@ -2,8 +2,8 @@
 # 
 # Created: GildedMinion, base code XME @ https://github.com/xme/toolbox/blob/master/ssllabs-scan-parse.py
 # run ssllabs-scan and output file to json then pipe through this or cat output and pipe through this to create spreadsheet
-# sample cat myscan.json | ./ssllabparser_toxslx.py
-# sample ssllabs-scan --host-file=mydomains.txt --quiet > mydomains.json && cat mydomains.json | ./ssllabparser_toxslx.py
+# sample 'cat myscan.json | ./ssllabparser_toxslx.py' outputs SSLLabsScanResults.xlsx
+# sample ./ssllabs-scan --quiet --hostfile=mydomain.txt --ignore-mismatch=true --hostcheck=false > mydomain.json && cat mydomains.json | ./ssllabparser_toxslx.py
 # scoring guide located : https://www.ssllabs.com/downloads/SSL_Server_Rating_Guide.pdf
 
 
