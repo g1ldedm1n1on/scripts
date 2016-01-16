@@ -45,6 +45,9 @@ worksheet.write('R1', 'Supports RC4', bold)
 worksheet.write('S1', 'Vulnerable to BEAST', bold)
 worksheet.write('T1', 'Insecure Renegotiation', bold)
 worksheet.write('U1', 'Server Signature', bold)
+worksheet.write('V1', 'Accepted Protocols', bold)
+
+
 #set default starting places
 row = 1
 col = 0
@@ -88,6 +91,25 @@ for site in data:
 			logjam = endpoints[0]['details']['logjam']
 			rc4 = endpoints[0]['details']['supportsRc4']
 			beast = endpoints[0]['details']['vulnBeast']
+			
+			#Loop through the protocol ids to find out what protocols are running.
+
+			cipher = endpoints[0]['details']['protocols']
+			for id in cipher:
+				#cipher = id['name'], id['version']
+				cipher += id['name'] + " " + id['version']
+				
+				print cipher
+				#id = cipher['id']
+			
+			# Need to loop through the protocols and take extract from each id,  name and version and add it to array
+			#foreach id in protocols:
+			#	version = protocols[0]['name']
+			#	print version
+			#print protocols
+			#version = endpoints[0]['details']['protocols'][0]['version']
+			#protocols = protocols + ':' + version
+			#print protocols
 			if "serverSignature" in endpoints[0]['details']:
 				servsig = endpoints[0]['details']['serverSignature']
 			else:
