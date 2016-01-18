@@ -45,16 +45,12 @@ worksheet.write('R1', 'Supports RC4', bold)
 worksheet.write('S1', 'Vulnerable to BEAST', bold)
 worksheet.write('T1', 'Insecure Renegotiation', bold)
 worksheet.write('U1', 'Server Signature', bold)
-worksheet.write('V1', 'SSL v2', bold)
-worksheet.write('W1', 'SSL v3', bold)
-worksheet.write('X1', 'TLS 1.0', bold)
-worksheet.write('Y1', 'TLS 1.1', bold)
-worksheet.write('Z1', 'TLS 1.2', bold)
+worksheet.write('V1', 'Accepted Protocols', bold)
+
 
 #set default starting places
 row = 1
 col = 0
-
 # make sure the site contains appropiate data to SSL stuff
 
 
@@ -73,7 +69,7 @@ for site in data:
 			certRaw = endpoints[0]['details']['chain']['certs'][0]['raw']
 			certmd5 = md5.new(certRaw).hexdigest()
 			domain = site['host']
-			print "Parsing Domain: " + domain
+			print domain
 			port = site['port']
 			grade = endpoints[0]['grade']
 			issuer = endpoints[0]['details']['cert']['issuerLabel']
@@ -97,28 +93,20 @@ for site in data:
 			beast = endpoints[0]['details']['vulnBeast']
 			
 			#Loop through the protocol ids to find out what protocols are running.
+
 			cipher = endpoints[0]['details']['protocols']
-			
-			# reset cipher each pass to blank
-			ssl2 = ""
-			tls10 = ""
-			tls11 = ""
-			ssl3 = ""
-			tls12 = ""
-
 			for id in cipher:
-
+				#cipher = id['name'], id['version']
 				cipher = id['name'] + " " + id['version']
-				if cipher == "TLS 1.0":
-					tls10 = "X"
-				elif cipher == "TLS 1.1":
-					tls11 = "X"
-				elif cipher == "SSL 3.0":
-					ssl3 = "X"
-				elif cipher == "TLS 1.2":
-					tls12 = "X"
-				elif cipher == "SSL 2.0":
-					ssl2 = "X"
+				if cipher = "TLS 1.0":
+					tls10= "x"
+				elseif cipher = "TLS 1.1"
+					tls11= "x"
+				else cipher = "SSL 3.0"
+					ssl3 = "x"
+					
+				print 
+				#id = cipher['id']
 			
 			# Need to loop through the protocols and take extract from each id,  name and version and add it to array
 			#foreach id in protocols:
@@ -135,7 +123,6 @@ for site in data:
 				pass
 			if servsig == "":
 				servsig == "No Server Signature"
-
 # Check Insecure Number and set value as needed
 			insecure = endpoints[0]['details']['renegSupport']
 			if insecure == 1:
@@ -167,10 +154,5 @@ for site in data:
 			worksheet.write(row, col + 18, beast)
 			worksheet.write(row, col + 19, insecureval)
 			worksheet.write(row, col + 20, servsig)
-			worksheet.write(row, col + 21, ssl2)
-			worksheet.write(row, col + 22, ssl3)
-			worksheet.write(row, col + 23, tls10)
-			worksheet.write(row, col + 24, tls11)
-			worksheet.write(row, col + 25, tls12)
 			row += 1
 workbook.close()
