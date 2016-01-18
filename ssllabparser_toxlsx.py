@@ -45,12 +45,16 @@ worksheet.write('R1', 'Supports RC4', bold)
 worksheet.write('S1', 'Vulnerable to BEAST', bold)
 worksheet.write('T1', 'Insecure Renegotiation', bold)
 worksheet.write('U1', 'Server Signature', bold)
-worksheet.write('V1', 'Accepted Protocols', bold)
+worksheet.write('V1', 'SSL v3', bold)
+worksheet.write('W1', 'TLS 1.0', bold)
+worksheet.write('X1', 'TLS 1.1', bold)
+worksheet.write('Y1', 'TLS 1.2', bold)
 
 
 #set default starting places
 row = 1
 col = 0
+
 # make sure the site contains appropiate data to SSL stuff
 
 
@@ -93,13 +97,32 @@ for site in data:
 			beast = endpoints[0]['details']['vulnBeast']
 			
 			#Loop through the protocol ids to find out what protocols are running.
-
 			cipher = endpoints[0]['details']['protocols']
+			
+			# reset cipher each pass to blank
+			# reset cipher each pass to blank
+			tls10 = ""
+			tls11 = ""
+			ssl3 = ""
+			tls12 = ""
+
 			for id in cipher:
-				#cipher = id['name'], id['version']
-				cipher += id['name'] + " " + id['version']
-				
+
+				cipher = id['name'] + " " + id['version']
+				if cipher == "TLS 1.0":
+					tls10 = "x"
+					print "matches tls1.0"
+				elif cipher == "TLS 1.1":
+					tls11 = "x"
+					print "matches tls1.1"
+				elif cipher == "SSL 3.0":
+					print "matches ssl3.0"
+					ssl3 = "x"
+				elif cipher == "TLS 1.2":
+					print "matches TLS 1.2"
+					tls12 = "x"
 				print cipher
+			
 				#id = cipher['id']
 			
 			# Need to loop through the protocols and take extract from each id,  name and version and add it to array
@@ -117,6 +140,7 @@ for site in data:
 				pass
 			if servsig == "":
 				servsig == "No Server Signature"
+
 # Check Insecure Number and set value as needed
 			insecure = endpoints[0]['details']['renegSupport']
 			if insecure == 1:
@@ -148,5 +172,9 @@ for site in data:
 			worksheet.write(row, col + 18, beast)
 			worksheet.write(row, col + 19, insecureval)
 			worksheet.write(row, col + 20, servsig)
+			worksheet.write(row, col + 21, ssl3)
+			worksheet.write(row, col + 22, tls10)
+			worksheet.write(row, col + 23, tls11)
+			worksheet.write(row, col + 24, tls12)
 			row += 1
 workbook.close()
