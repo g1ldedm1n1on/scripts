@@ -120,14 +120,7 @@ for site in data:
 				elif cipher == "SSL 2.0":
 					ssl2 = "X"
 			
-			# Need to loop through the protocols and take extract from each id,  name and version and add it to array
-			#foreach id in protocols:
-			#	version = protocols[0]['name']
-			#	print version
-			#print protocols
-			#version = endpoints[0]['details']['protocols'][0]['version']
-			#protocols = protocols + ':' + version
-			#print protocols
+			# parse singature and handle where there isn't any or any returned
 			if "serverSignature" in endpoints[0]['details']:
 				servsig = endpoints[0]['details']['serverSignature']
 			else:
