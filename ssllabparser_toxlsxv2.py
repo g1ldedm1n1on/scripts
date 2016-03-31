@@ -29,8 +29,28 @@ with sys.stdin as json_data:
 #setup XLSX
 name = "SSLLabsScanResults" + "_" + info + ".xlsx"
 workbook = xlsxwriter.Workbook(name)
-worksheet = workbook.add_worksheet()
+worksheet = workbook.add_worksheet('Results')
+worksheet2 = workbook.add_worksheet('Stats')
 bold = workbook.add_format({'bold': True})
+
+#set some column widths
+worksheet.set_column('A:A', 35)
+worksheet.set_column('C:C', 13)
+worksheet.set_column('E:E', 45)
+worksheet.set_column('F:F', 22)
+worksheet.set_column('G:G', 31)
+worksheet.set_column('T:T', 33)
+worksheet.set_column('U:U', 81)
+worksheet.set_column('M:M', 22)
+worksheet.set_column('O:O', 14)
+worksheet.set_column('S:S', 19)
+worksheet.set_column('AA:AA', 14)
+worksheet.set_column('AB:AB', 15)
+worksheet.set_column('AC:AC', 16)
+worksheet.set_column('AD:AD', 15)
+
+
+# write column headers
 worksheet.write('A1', 'Site Name', bold)
 worksheet.write('B1', 'Port', bold)
 worksheet.write('C1', 'IP Address', bold)
@@ -43,7 +63,7 @@ worksheet.write('I1', 'Certificate Algorithm', bold)
 worksheet.write('J1', 'Certificate Strength', bold)
 worksheet.write('K1', 'HeartBleed', bold)
 worksheet.write('L1', 'HeartBeat', bold)
-worksheet.write('M1', 'OpenSSL CCS', bold)
+worksheet.write('M1', 'OpenSSL CCS Vulnerable', bold)
 worksheet.write('N1', 'Poodle', bold)
 worksheet.write('O1', 'Fallback SCSV', bold)
 worksheet.write('P1', 'Freak', bold)
@@ -62,12 +82,66 @@ worksheet.write('AB1', 'HSTS Max_Age', bold)
 worksheet.write('AC1', 'STS Subdomains', bold)
 worksheet.write('AD1', 'STS PreEnabled', bold)
 worksheet.freeze_panes(1, 0)
-
+worksheet.autofilter('A1:AD1')
 #set default starting places
 row = 1
 col = 0
 
 # make sure the site contains appropiate data to SSL stuff
+
+#build out worksheet for stats and charts
+
+
+blue = workbook.add_format({'bold': True})
+worksheet2.set_column('A:A', 20)
+blue.set_pattern(1)  # This is optional when using a solid fill.
+blue.set_bg_color('#6495ED')
+blue.set_font_color("#F0FFFF")
+
+#setup Grades Table
+worksheet2.write('A1', 'Grades', blue)
+worksheet2.write('B1', 'Count', blue)
+worksheet2.write('A2', 'A')
+worksheet2.write('A3', 'A-')
+worksheet2.write('A4', 'B')
+worksheet2.write('A5', 'C')
+worksheet2.write('A6', 'F')
+worksheet2.write('A7', 'T')
+worksheet2.write('A8', 'M')
+
+#setup SSL Supported Versions
+
+worksheet2.write('A10', 'SSL Version Supported', blue)
+worksheet2.write('B10', 'Count', blue)
+worksheet2.write('A11', 'SSLv2')
+worksheet2.write('A12', 'SSLv3')
+worksheet2.write('A13', 'TLS1')
+worksheet2.write('A14', 'TLS1.1')
+worksheet2.write('A15', 'TLS1.2')
+
+
+#setup HSTS Table
+worksheet2.write('A18', 'HSTS Value', blue)
+worksheet2.write('B18', 'Count', blue)
+worksheet2.write('A19', 'Absent')
+worksheet2.write('A20', 'Present')
+worksheet2.write('A21', 'Invalid')
+worksheet2.write('A22', 'Unknown')
+
+
+#setup Vulns Tables
+worksheet2.write('A24', 'Vulnerabilities', blue)
+worksheet2.write('B24', 'Count', blue)
+worksheet2.write('A25', 'HeartBleed')
+worksheet2.write('A26', 'HeartBeat')
+worksheet2.write('A27', 'Poodle')
+worksheet2.write('A28', 'fallback SCSV')
+worksheet2.write('A29', 'FREAK')
+worksheet2.write('A30', 'Logjam')
+worksheet2.write('A31', 'Supports RC4')
+worksheet2.write('A32', 'BEAST')
+worksheet2.write('A33', 'Insecure Renegotiation')
+
 
 
 #parse through json and gather specific info
@@ -95,7 +169,17 @@ for site in data:
 			strength = endpoints[0]['details']['key']['strength']
 			heartbled = (endpoints[0]['details']['heartbleed'])
 			heartbeat = endpoints[0]['details']['heartbeat']
+			
 			opensslccs = endpoints[0]['details']['openSslCcs']
+			if opensslccs == 2:
+				opensslccs = "Probably, but not exploitable"
+			elif opensslccs == -1:
+				opensslccs = "Unknown"
+			elif opensslccs == 1:
+				opensslccs = "No"
+
+
+
 			poodle = endpoints[0]['details']['poodle']
 # Needed to validate fallbackScvs.  Json is inconsistent and doesn't always return true or false for key
 			if "fallbackScsv" in endpoints[0]['details']:
@@ -115,17 +199,14 @@ for site in data:
 			stspre = ""
 
 			hsts = endpoints[0]['details']['stsStatus']
-			print hsts
+			
 
 			if hsts == "present":
-				print "HSTS was present"
 				hstsage = endpoints[0]['details']['stsMaxAge']
 				stssub = endpoints[0]['details']['stsSubdomains']
 				stspre = endpoints[0]['details']['stsPreload']
-				print "setting HSTS " + hsts
-				# "HSTS Age" + hstsage
+				
 			else:
-				print "No HSTS Found"
 				hstsage = ""
 				pass
 			#Loop through the protocol ids to find out what protocols are running.
@@ -204,4 +285,44 @@ for site in data:
 			worksheet.write(row, col + 28, stssub)
 			worksheet.write(row, col + 29, stspre)
 			row += 1
+
+
+# build tables and write to xlsx
+#grades tables
+		worksheet2.write_formula('B2', '=COUNTIF(Results!D2:D10000, "A")')
+		worksheet2.write_formula('B3', '=COUNTIF(Results!D2:D10000, "A-")')
+		worksheet2.write_formula('B4', '=COUNTIF(Results!D2:D10000, "B")')
+		worksheet2.write_formula('B5', '=COUNTIF(Results!D2:D10000, "C")')
+		worksheet2.write_formula('B6', '=COUNTIF(Results!D2:D10000, "F")')
+		worksheet2.write_formula('B7', '=COUNTIF(Results!D2:D10000, "T")')
+		worksheet2.write_formula('B8', '=COUNTIF(Results!D2:D10000, "M")')
+
+
+#SSL Versions Tables
+		worksheet2.write_formula('B11', '=COUNTIF(Results!V2:V10000, "X")')
+		worksheet2.write_formula('B12', '=COUNTIF(Results!W2:W10000, "X")')
+		worksheet2.write_formula('B13', '=COUNTIF(Results!X2:X10000, "X")')
+		worksheet2.write_formula('B14', '=COUNTIF(Results!Y2:Y10000, "X")')
+		worksheet2.write_formula('B15', '=COUNTIF(Results!Z2:Z10000, "X")')
+
+
+#HSTS Tables
+		worksheet2.write_formula('B19', '=COUNTIF(Results!AA2:AA10000, "Absent")')
+		worksheet2.write_formula('B20', '=COUNTIF(Results!AA2:AA10000, "Present")')
+		worksheet2.write_formula('B21', '=COUNTIF(Results!AA2:AA10000, "Invalid")')
+		worksheet2.write_formula('B22', '=COUNTIF(Results!AA2:AA10000, "Unknown")')
+
+#Vulnerabilities Table
+		worksheet2.write_formula('B25', '=COUNTIF(Results!K2:K10000, "True")')
+		worksheet2.write_formula('B26', '=COUNTIF(Results!L2:L10000, "True")')
+		worksheet2.write_formula('B27', '=COUNTIF(Results!N2:N10000, "True")')
+		worksheet2.write_formula('B28', '=COUNTIF(Results!O2:O10000, "True")')
+		worksheet2.write_formula('B29', '=COUNTIF(Results!P2:P10000, "True")')
+		worksheet2.write_formula('B30', '=COUNTIF(Results!Q2:Q10000, "True")')
+		worksheet2.write_formula('B31', '=COUNTIF(Results!R2:R10000, "True")')
+		worksheet2.write_formula('B32', '=COUNTIF(Results!S2:S10000, "True")')
+		worksheet2.write_formula('B33', '=COUNTIF(Results!T2:T10000, "Secure Renegotiation Allowed Possible DoS")')
+
+
+
 workbook.close()
