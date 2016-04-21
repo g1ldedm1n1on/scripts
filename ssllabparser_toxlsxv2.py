@@ -101,23 +101,24 @@ blue.set_font_color("#F0FFFF")
 #setup Grades Table
 worksheet2.write('A1', 'Grades', blue)
 worksheet2.write('B1', 'Count', blue)
-worksheet2.write('A2', 'A')
-worksheet2.write('A3', 'A-')
-worksheet2.write('A4', 'B')
-worksheet2.write('A5', 'C')
-worksheet2.write('A6', 'F')
-worksheet2.write('A7', 'T')
-worksheet2.write('A8', 'M')
+worksheet2.write('A2', 'A+')
+worksheet2.write('A3', 'A')
+worksheet2.write('A4', 'A-')
+worksheet2.write('A5', 'B')
+worksheet2.write('A6', 'C')
+worksheet2.write('A7', 'F')
+worksheet2.write('A8', 'T')
+worksheet2.write('A9', 'M')
 
 #setup SSL Supported Versions
 
-worksheet2.write('A10', 'SSL Version Supported', blue)
-worksheet2.write('B10', 'Count', blue)
-worksheet2.write('A11', 'SSLv2')
-worksheet2.write('A12', 'SSLv3')
-worksheet2.write('A13', 'TLS1')
-worksheet2.write('A14', 'TLS1.1')
-worksheet2.write('A15', 'TLS1.2')
+worksheet2.write('A11', 'SSL Version Supported', blue)
+worksheet2.write('B11', 'Count', blue)
+worksheet2.write('A12', 'SSLv2')
+worksheet2.write('A13', 'SSLv3')
+worksheet2.write('A14', 'TLS1')
+worksheet2.write('A15', 'TLS1.1')
+worksheet2.write('A16', 'TLS1.2')
 
 
 #setup HSTS Table
@@ -289,21 +290,22 @@ for site in data:
 
 # build tables and write to xlsx
 #grades tables
-		worksheet2.write_formula('B2', '=COUNTIF(Results!D2:D10000, "A")')
-		worksheet2.write_formula('B3', '=COUNTIF(Results!D2:D10000, "A-")')
-		worksheet2.write_formula('B4', '=COUNTIF(Results!D2:D10000, "B")')
-		worksheet2.write_formula('B5', '=COUNTIF(Results!D2:D10000, "C")')
-		worksheet2.write_formula('B6', '=COUNTIF(Results!D2:D10000, "F")')
-		worksheet2.write_formula('B7', '=COUNTIF(Results!D2:D10000, "T")')
-		worksheet2.write_formula('B8', '=COUNTIF(Results!D2:D10000, "M")')
+		worksheet2.write_formula('B2', '=COUNTIF(Results!D2:D10000, "A+")')
+		worksheet2.write_formula('B3', '=COUNTIF(Results!D2:D10000, "A")')
+		worksheet2.write_formula('B4', '=COUNTIF(Results!D2:D10000, "A-")')
+		worksheet2.write_formula('B5', '=COUNTIF(Results!D2:D10000, "B")')
+		worksheet2.write_formula('B6', '=COUNTIF(Results!D2:D10000, "C")')
+		worksheet2.write_formula('B7', '=COUNTIF(Results!D2:D10000, "F")')
+		worksheet2.write_formula('B8', '=COUNTIF(Results!D2:D10000, "T")')
+		worksheet2.write_formula('B9', '=COUNTIF(Results!D2:D10000, "M")')
 
 
 #SSL Versions Tables
-		worksheet2.write_formula('B11', '=COUNTIF(Results!V2:V10000, "X")')
-		worksheet2.write_formula('B12', '=COUNTIF(Results!W2:W10000, "X")')
-		worksheet2.write_formula('B13', '=COUNTIF(Results!X2:X10000, "X")')
-		worksheet2.write_formula('B14', '=COUNTIF(Results!Y2:Y10000, "X")')
-		worksheet2.write_formula('B15', '=COUNTIF(Results!Z2:Z10000, "X")')
+		worksheet2.write_formula('B12', '=COUNTIF(Results!V2:V10000, "X")')
+		worksheet2.write_formula('B13', '=COUNTIF(Results!W2:W10000, "X")')
+		worksheet2.write_formula('B14', '=COUNTIF(Results!X2:X10000, "X")')
+		worksheet2.write_formula('B15', '=COUNTIF(Results!Y2:Y10000, "X")')
+		worksheet2.write_formula('B16', '=COUNTIF(Results!Z2:Z10000, "X")')
 
 
 #HSTS Tables
