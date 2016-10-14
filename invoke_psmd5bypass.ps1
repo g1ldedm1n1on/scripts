@@ -18,14 +18,14 @@ function Invoke-PSMD5Bypass {
     Modifies all PS1 files in a directory path to change MD5 value to bypass AV
 
     .DESCRIPTION
-    This function will append to the end of each PS1 file a comment section of random data to change
+    This function will append to the end of each PS1,PSD1,PSM1 files a comment section of random data to change
     the MD5 Hash of the File.
 
     .PARAMETER DIR
-    The parent directory to search in for .ps1 files
+    The parent directory to search in for PowerShell files
 
     .OUTPUTS
-    Modified PS1 File
+    Modified PS1,PSD1,PSM1 Files
 
     .EXAMPLE
     Invoke-PSMD5Bypass -dir C:\powershell
@@ -44,7 +44,7 @@ param(
  [System.String]
  ${dir})
 
- begin
+ Try
  {
 
 
@@ -54,8 +54,14 @@ param(
 
  # Get the path to PS1 files in the directory provided
  $psfiles += get-childitem $dir -Filter *.ps1 -Recurse | Foreach-Object {$_.FullName}
+ write-host -ForegroundColor Green "Scanning for .PS1 Files..."
+$empty = ($psfiles | Measure-Object).Count
 
 
+
+if ($empty -eq 0) {
+    write-host -ForegroundColor red "No PS1 Files Found!"
+    }
 
 
 # Loop through each file to get hash
@@ -79,6 +85,77 @@ foreach ( $files in $psfiles )
         $newhash = (Get-FileHash $files -Algorithm MD5).hash
         write-host "New MD5 Hash :" $newhash -ForegroundColor Green
     }
-}
+
+$psfiles = @()
+$psfiles += get-childitem $dir -Filter *.psd1 -Recurse | Foreach-Object {$_.FullName}
+write-host -ForegroundColor Green "Scanning for .PSD1 Files..."
+$empty = ($psfiles | Measure-Object).Count
+
+
+
+if ($empty -eq 0) {
+    write-host -ForegroundColor red "No PSM1 Files Found!"
+    }
+
+
+foreach ( $files in $psfiles ) 
+    {
+        Write-Host "Modifying File: " $files
+        $hash = (Get-FileHash $files -Algorithm MD5).hash
+        write-host "Current MD5 Hash " $hash -ForegroundColor Yellow
+        $rand = -join ((1..200) | %{(65..90) + (97..122) | Get-Random} | % {[char]$_})
+
+        # append comment characters to random data
+        $t = "<#"
+        $u = "#>"
+        $rand = $t + $rand
+        $rand = $rand + $u
+
+        # Append random data to file
+        $rand | Out-File -FilePath $files -Append -Encoding ascii
+
+        # Compute new hash
+        $newhash = (Get-FileHash $files -Algorithm MD5).hash
+        write-host "New MD5 Hash :" $newhash -ForegroundColor Green
+    }
+$psfiles = @()
+$psfiles += get-childitem $dir -Filter *.psm1 -Recurse | Foreach-Object {$_.FullName}
+write-host -ForegroundColor Green "Scanning for .PSM1 Files..."
+$empty = ($psfiles | Measure-Object).Count
+
+if ($empty -eq 0) {
+    write-host -ForegroundColor red "No PSM1 Files Found!"
+    }
+
+
+foreach ( $files in $psfiles ) 
+    {
+        Write-Host "Modifying File: " $files
+        $hash = (Get-FileHash $files -Algorithm MD5).hash
+        write-host "Current MD5 Hash " $hash -ForegroundColor Yellow
+        $rand = -join ((1..200) | %{(65..90) + (97..122) | Get-Random} | % {[char]$_})
+
+        # append comment characters to random data
+        $t = "<#"
+        $u = "#>"
+        $rand = $t + $rand
+        $rand = $rand + $u
+
+        # Append random data to file
+        $rand | Out-File -FilePath $files -Append -Encoding ascii
+
+        # Compute new hash
+        $newhash = (Get-FileHash $files -Algorithm MD5).hash
+        write-host "New MD5 Hash :" $newhash -ForegroundColor Green
+    }
+
+
 }
 
+Catch
+{
+
+write-host "Uh oh.. Something went terribly wrong! Script didn't execute!"
+
+}
+}
