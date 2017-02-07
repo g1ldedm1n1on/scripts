@@ -9,7 +9,7 @@ apt-get install open-vm-tools-desktop fuse
 mkdir /root/git_repos
 cd /root/git_repos
 
-printf /n*********Cloning Git Repos********
+printf "/n*********Cloning Git Repos********"
 git clone https://github.com/EmpireProject/Empire.git
 git clone https://github.com/EmpireProject/EmPyre.git
 git clone https://github.com/Sw4mpf0x/Kraken.git
