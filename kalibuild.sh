@@ -1,6 +1,6 @@
 #! /bin/bash
 
-printf "\nInstalling VMwareTools
+printf "\nInstalling VMwareTools"
 apt-get install open-vm-tools-desktop fuse
 
 
@@ -9,7 +9,7 @@ apt-get install open-vm-tools-desktop fuse
 mkdir /root/git_repos
 cd /root/git_repos
 
-printf "/n*********Cloning Git Repos********"
+printf "\n*********Cloning Git Repos********"
 git clone https://github.com/EmpireProject/Empire.git
 git clone https://github.com/EmpireProject/EmPyre.git
 git clone https://github.com/Sw4mpf0x/Kraken.git
@@ -25,7 +25,7 @@ wget http://www.computec.ch/projekte/vulscan/download/nmap_nse_vulscan-2.0.tar.g
 tar xfz nmap_nse_vulscan-2.0.tar.gz
 mv vulscan/ /usr/share/nmap/scripts/
 
-printf "\n*********Installing Kraken*******"
+printf "\n*********Installing Kraken*********"
 cd /root/git_repos/Kraken
 chmod 755 ./setup.sh
 ./setup.sh
